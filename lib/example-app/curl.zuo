@@ -1,0 +1,11 @@
+#lang zuo
+
+(provide curl-easy-init
+         curl-easy-cleanup
+         curl-fetch)
+
+(define (curl-fetch c url)
+  (define doc (curl-fetch* c url))
+  (if (string? doc)
+      (error "curl-fetch" doc)
+      (string-join (reverse doc) "")))

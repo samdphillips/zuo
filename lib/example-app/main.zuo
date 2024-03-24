@@ -1,0 +1,11 @@
+#lang zuo
+
+(require "curl.zuo"
+         "xml.zuo")
+
+(define url "https://example.com")
+(define c (curl-easy-init))
+
+(call-with-xml-reader (curl-fetch c url) url
+  (lambda (reader) ...)
+(curl-easy-cleanup c)

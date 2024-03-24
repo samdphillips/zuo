@@ -70,6 +70,8 @@ ZUO_EXPORT char *zuo_ext_string_ptr(zuo_ext_t *str);
 ZUO_EXPORT zuo_ext_t *zuo_ext_symbol(const char *str);
 ZUO_EXPORT zuo_ext_t *zuo_ext_hash_ref(zuo_ext_t *ht, zuo_ext_t *key, zuo_ext_t *fail);
 ZUO_EXPORT zuo_ext_t *zuo_ext_hash_set(zuo_ext_t *ht, zuo_ext_t *key, zuo_ext_t *val);
+ZUO_EXPORT zuo_ext_t *zuo_ext_foreign(void *ptr);
+ZUO_EXPORT void* zuo_ext_foreign_deref(zuo_ext_t *h);
 
 /* To get more functions, use a symbol key to look them up in the
    kernel environment via `zuo_ext_hash_ref` --- but don't try to

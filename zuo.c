@@ -249,6 +249,7 @@ typedef enum {
   zuo_handle_process_running_status,
   zuo_handle_process_done_status,
   zuo_handle_cleanable_status,
+  zuo_handle_foreign_status,
 } zuo_handle_status_t;
 
 typedef struct zuo_handle_t {
@@ -260,6 +261,7 @@ typedef struct zuo_handle_t {
       union {
         zuo_raw_handle_t handle;
         zuo_int_t result;
+        void *ptr;
       } u;
     } h;
     zuo_t *forward; /* make sure the object is big enough */
@@ -4728,6 +4730,23 @@ static zuo_t *zuo_handle_p(zuo_t *var) {
 }
 
 /*======================================================================*/
+/* foreign pointers                                                     */
+/*======================================================================*/
+
+static zuo_t *zuo_handle_foreign(void *ptr) {
+  zuo_handle_t *obj = (zuo_handle_t *)zuo_new(zuo_handle_tag, sizeof(zuo_handle_t));
+  obj->id = zuo_handle_count++;
+  obj->u.h.u.ptr = ptr;
+  obj->u.h.status = zuo_handle_foreign_status;
+  return (zuo_t *)obj;
+}
+
+static void *zuo_handle_foreign_deref(zuo_t *handle) {
+  // XXX: validate handle ...
+  return ((zuo_handle_t*)handle)->u.h.u.ptr;
+}
+
+/*======================================================================*/
 /* modules                                                              */
 /*======================================================================*/
 
@@ -7563,6 +7582,8 @@ char *zuo_ext_string_ptr(zuo_ext_t *str) { return ZUO_STRING_PTR(str); }
 zuo_ext_t *zuo_ext_symbol(const char *str) { return zuo_symbol(str); }
 zuo_ext_t *zuo_ext_hash_ref(zuo_ext_t *ht, zuo_ext_t *key, zuo_ext_t *fail) { return zuo_hash_ref(ht, key, fail); }
 zuo_ext_t *zuo_ext_hash_set(zuo_ext_t *ht, zuo_ext_t *key, zuo_ext_t *val) { return zuo_hash_set(ht, key, val); }
+zuo_ext_t *zuo_ext_foreign(void *ptr) { return zuo_handle_foreign(ptr); }
+void* zuo_ext_foreign_deref(zuo_ext_t *h) { return zuo_handle_foreign_deref(h); }
 
 zuo_ext_t *zuo_ext_kernel_env() { return z.o_top_env; }
 zuo_ext_t *zuo_ext_apply(zuo_ext_t *proc, zuo_ext_t *args) {

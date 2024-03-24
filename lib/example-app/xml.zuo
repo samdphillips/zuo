@@ -1,0 +1,24 @@
+#lang zuo
+
+(provide call-with-xml-reader
+         current-node?
+         expect-node
+         consume-node)
+
+(define (current-node? reader type name)
+  (and (= type (xml-nodetype reader))
+       (string=? name (xml-name reader))))
+
+(define (expect-node reader type name)
+  (unless (current-node? reader type name)
+    (error "expect-node"  "Expected: " (cons type name) ", got: " (cons (xml-nodetype reader) (xml-name reader)))))
+
+(define (consume-node reader type name)
+  (expect-node reader type name)
+  (xml-read reader))
+
+(define (call-with-xml-reader doc url proc)
+  (define reader (xml-make-reader doc url))
+  (define result (proc reader))
+  (xml-free-reader reader)
+  result)
